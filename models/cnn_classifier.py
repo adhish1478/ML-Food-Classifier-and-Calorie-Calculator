@@ -1,9 +1,8 @@
 """
-NutriVision CNN-Based Food Recognition Model.
-Matches Step 3 and Section 1 ('CNN for Food Recognition') of the infographic:
-Input Image -> Conv + ReLU -> Pooling -> Flatten -> FC Layer (Output).
-Utilizes MobileNetV2 / ResNet Transfer Learning for high accuracy spatial
-feature extraction and lightweight cross-platform inference (M1 Mac & RTX 3050).
+NutriVision Deep Food Recognition Model.
+Deploys a Zero-Shot Vision-Language Food Classifier (CLIP ViT) backed by
+Hugging Face pre-trained weights for state-of-the-art culinary dish recognition,
+spanning regional Indian, Asian, and Western cuisines.
 """
 
 import os
@@ -11,9 +10,6 @@ import sys
 from typing import List, Dict, Any, Tuple
 from PIL import Image
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torchvision.models as models
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if PROJECT_ROOT not in sys.path:
@@ -21,6 +17,43 @@ if PROJECT_ROOT not in sys.path:
 
 from utils.nutrition_db import FOOD_CLASSES, CLASS_TO_IDX, IDX_TO_CLASS, FOOD_DATABASE
 from utils.preprocessing import preprocess_food_image
+
+# Curated culinary natural-language descriptions for robust zero-shot classification
+FOOD_PROMPTS = {
+    "oatmeal": "a bowl of oatmeal porridge with sliced bananas and peanut butter",
+    "gulab_jamun": "gulab jamun sweet indian dessert soaked in sugar syrup",
+    "chicken_biryani": "a plate of spiced chicken biryani with basmati rice and meat",
+    "pizza": "a hot cheesy slice of pizza with toppings",
+    "burger": "a juicy burger with meat or chicken patty and cheese in a bun",
+    "caesar_salad": "a fresh chicken caesar salad with green lettuce and dressing",
+    "masala_dosa": "a crispy south indian masala dosa crepe with potato curry filling",
+    "idli": "steamed white idli rice cakes with sambar",
+    "samosa": "crispy fried triangular indian samosa pastry",
+    "paneer_butter_masala": "paneer butter masala curry with cubes of cottage cheese",
+    "butter_chicken": "creamy butter chicken curry in tomato gravy",
+    "dal_makhani": "creamy black dal makhani lentil curry",
+    "chole_bhature": "chole bhature chickpeas with puffed fried bread",
+    "roti_naan": "flatbread butter naan or whole wheat tandoori roti",
+    "french_fries": "golden crispy potato french fries",
+    "spaghetti_bolognese": "spaghetti pasta with rich bolognese meat sauce",
+    "grilled_chicken": "herb grilled chicken breast with vegetables",
+    "sandwich": "a club sandwich with bread layers and fillings",
+    "steak": "a grilled beef steak fillet",
+    "fried_rice": "chinese chicken fried rice with vegetables and eggs",
+    "sushi": "fresh salmon sushi rolls with rice and seaweed",
+    "dim_sum": "steamed dumplings dim sum in a bamboo basket",
+    "ramen": "a hot bowl of ramen noodle soup with boiled egg and broth",
+    "pad_thai": "pad thai stir fried noodles with peanuts",
+    "boiled_eggs": "hard boiled eggs sliced in half",
+    "greek_yogurt": "a bowl of plain white greek yogurt",
+    "fruit_salad": "a bowl of fresh mixed fruit salad",
+    "green_salad": "a fresh green leafy garden salad with cucumber",
+    "pancakes": "a stack of fluffy breakfast pancakes with maple syrup",
+    "vegetable_curry": "mixed vegetable curry with spices and vegetables"
+}
+
+FOOD_KEYS = list(FOOD_PROMPTS.keys())
+CANDIDATE_TEXTS = [f"a photo of {FOOD_PROMPTS[k]}" for k in FOOD_KEYS]
 
 
 def get_optimal_device() -> torch.device:
@@ -35,128 +68,81 @@ def get_optimal_device() -> torch.device:
         return torch.device("cpu")
 
 
-class FoodClassifierCNN(nn.Module):
+class FoodClassifier:
     """
-    Deep Convolutional Neural Network for Food Category Classification.
-    Built upon MobileNetV2 with inverted residual blocks for real-time spatial
-    feature learning (edges, textures, colors, culinary geometry).
+    High-accuracy Food Classifier utilizing a pre-trained Vision Transformer
+    (CLIP ViT) with natural language culinary prompt matching.
     """
-    def __init__(self, num_classes: int = len(FOOD_CLASSES), pretrained: bool = True):
-        super(FoodClassifierCNN, self).__init__()
-        self.num_classes = num_classes
+    def __init__(self, model_id: str = "openai/clip-vit-base-patch32", device: torch.device = None):
+        if device is None:
+            device = get_optimal_device()
+        self.device = device
+        self.model_id = model_id
 
-        # Initialize base MobileNetV2 architecture
-        base_model = models.mobilenet_v2(weights=None)
+        from transformers import CLIPProcessor, CLIPModel
+        print(f"[NutriVision] Initializing Pretrained Food Classifier ({model_id}) on {device}...")
+        self.processor = CLIPProcessor.from_pretrained(model_id)
+        self.model = CLIPModel.from_pretrained(model_id).to(device)
+        self.model.eval()
 
-        if pretrained:
-            local_weights = os.path.join(os.path.dirname(__file__), "mobilenet_v2.pth")
-            hub_cache = os.path.expanduser("~/.cache/torch/hub/checkpoints/mobilenet_v2-7ebf99e0.pth")
+        self.food_keys = FOOD_KEYS
+        self.candidate_texts = CANDIDATE_TEXTS
 
-            if os.path.exists(local_weights):
-                state_dict = torch.load(local_weights, map_location="cpu")
-                base_model.load_state_dict(state_dict)
-            elif os.path.exists(hub_cache):
-                state_dict = torch.load(hub_cache, map_location="cpu")
-                base_model.load_state_dict(state_dict)
-            else:
-                try:
-                    weights = models.MobileNet_V2_Weights.DEFAULT
-                    base_model = models.mobilenet_v2(weights=weights)
-                except Exception:
-                    pass
+    def predict(self, image: Image.Image, top_k: int = 3) -> Tuple[Dict[str, Any], List[Dict[str, Any]], Dict[str, Any]]:
+        # Preprocessing representation (Step 2 visual cards)
+        prep_data = preprocess_food_image(image)
 
-        # Retain feature extractor (Conv + Inverted Residual blocks + Pooling)
-        self.features = base_model.features
-        self.pool = nn.AdaptiveAvgPool2d((1, 1))
+        rgb_img = image.convert("RGB")
+        inputs = self.processor(
+            text=self.candidate_texts,
+            images=rgb_img,
+            return_tensors="pt",
+            padding=True
+        ).to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+            logits = outputs.logits_per_image  # (1, num_classes)
+            probs = logits.softmax(dim=1).squeeze(0)
+
+        top_probs, top_indices = torch.topk(probs, min(top_k, len(self.food_keys)))
+
+        candidates = []
+        for prob, idx in zip(top_probs.cpu().tolist(), top_indices.cpu().tolist()):
+            k = self.food_keys[idx]
+            food_meta = FOOD_DATABASE.get(k, {
+                "display_name": k.replace("_", " ").title(),
+                "cuisine": "Global",
+                "category": "Main",
+                "healthy_alternative": ""
+            })
+            candidates.append({
+                "food_key": k,
+                "display_name": food_meta["display_name"],
+                "cuisine": food_meta["cuisine"],
+                "category": food_meta["category"],
+                "confidence": round(prob * 100.0, 2),
+                "healthy_alternative": food_meta["healthy_alternative"]
+            })
+
+        top1 = candidates[0]
+        return top1, candidates, prep_data
 
 
-        # Custom high-capacity classification head
-        in_features = base_model.classifier[1].in_features  # 1280
-        self.classifier = nn.Sequential(
-            nn.Dropout(p=0.25),
-            nn.Linear(in_features, 256),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.2),
-            nn.Linear(256, num_classes)
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Forward pass:
-        x: (batch_size, 3, 224, 224)
-        output: (batch_size, num_classes) logits
-        """
-        feats = self.features(x)
-        pooled = self.pool(feats)
-        flattened = torch.flatten(pooled, 1)
-        logits = self.classifier(flattened)
-        return logits
-
-
-def load_food_classifier(model_path: str = None, device: torch.device = None) -> FoodClassifierCNN:
+def load_food_classifier(model_path: str = None, device: torch.device = None) -> FoodClassifier:
     """
-    Initializes and loads the FoodClassifierCNN.
-    If saved weights exist at model_path, loads them; otherwise initializes
-    with pretrained MobileNetV2 backbone weights.
+    Factory function to load the NutriVision food classifier.
     """
-    if device is None:
-        device = get_optimal_device()
-
-    model = FoodClassifierCNN(num_classes=len(FOOD_CLASSES), pretrained=True)
-
-    if model_path and os.path.exists(model_path):
-        state_dict = torch.load(model_path, map_location=device)
-        model.load_state_dict(state_dict)
-        print(f"[NutriVision CNN] Loaded trained weights from {model_path}")
-    else:
-        print("[NutriVision CNN] Initialized with pretrained backbone feature extractor.")
-
-    model.to(device)
-    model.eval()
-    return model
+    return FoodClassifier(device=device)
 
 
 def classify_food_image(
-    model: FoodClassifierCNN,
+    model: FoodClassifier,
     image: Image.Image,
     top_k: int = 3,
     device: torch.device = None
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]], Dict[str, Any]]:
     """
-    Runs the complete Step 2 & 3 pipeline on an input image:
-    1. Preprocesses image (Resize, Grayscale, Normalize)
-    2. Runs CNN forward pass
-    3. Computes Softmax probability distribution
-    4. Returns Top-1 prediction, Top-k candidates, and preprocessing visualization dict.
+    Convenience wrapper function matching the app interface.
     """
-    if device is None:
-        device = get_optimal_device()
-
-    # Step 2: Preprocessing
-    prep_data = preprocess_food_image(image)
-    tensor = torch.tensor(prep_data["tensor_array"], dtype=torch.float32, device=device)
-
-    # Step 3: Forward Pass
-    model.eval()
-    with torch.no_grad():
-        logits = model(tensor)
-        probs = F.softmax(logits, dim=1).squeeze(0)  # (num_classes,)
-
-    top_probs, top_indices = torch.topk(probs, min(top_k, len(FOOD_CLASSES)))
-
-    top_candidates = []
-    for prob, idx in zip(top_probs.cpu().tolist(), top_indices.cpu().tolist()):
-        cls_key = IDX_TO_CLASS[idx]
-        food_meta = FOOD_DATABASE[cls_key]
-        top_candidates.append({
-            "food_key": cls_key,
-            "display_name": food_meta["display_name"],
-            "cuisine": food_meta["cuisine"],
-            "category": food_meta["category"],
-            "confidence": round(prob * 100.0, 2),
-            "healthy_alternative": food_meta["healthy_alternative"]
-        })
-
-    top1 = top_candidates[0]
-
-    return top1, top_candidates, prep_data
+    return model.predict(image, top_k=top_k)

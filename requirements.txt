@@ -1,6 +1,7 @@
 # Core Deep Learning Framework
 torch>=2.0.0
 torchvision>=0.15.0
+transformers>=4.35.0
 
 # Web Application & Visualization
 streamlit>=1.30.0
