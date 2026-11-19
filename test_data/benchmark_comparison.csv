@@ -1,0 +1,100 @@
+ID,Ground Truth Dish,Predicted Dish,Top-1 Confidence (%),Top-1 Match,Top-3 Match,GT Toppings,Detected Toppings,GT Calories (kcal),Predicted Calories (kcal),Calorie Error (kcal),GT Protein (g),Pred Protein (g),GT Carbs (g),Pred Carbs (g),GT Fat (g),Pred Fat (g)
+001,Vada Pav,Vada Pav,88.49,YES,YES,Spicy Chutney / Garlic Powder,,283.0,196.2,86.8,5.7,7.8,40.5,57.0,11.2,15.8
+002,Pav Bhaji,Pav Bhaji,92.09,YES,YES,,Spicy Chutney / Garlic Powder,480.0,315.9,164.1,11.4,11.9,73.5,76.0,16.5,17.2
+003,Samosa,Samosa,92.51,YES,YES,Spicy Chutney / Garlic Powder,,332.0,126.4,205.6,5.9,5.4,40.9,38.4,16.3,15.6
+004,Pani Puri / Golgappa,Pani Puri / Golgappa,99.12,YES,YES,,,261.0,96.4,164.6,5.0,5.0,46.8,46.8,6.3,6.3
+005,Bhel Puri / Chaat,Bhel Puri / Chaat,40.66,YES,YES,Spicy Chutney / Garlic Powder,Honey / Maple Syrup; Spicy Chutney / Garlic Powder,287.0,370.2,83.2,7.2,7.2,51.3,63.7,6.8,6.8
+006,Chole Bhature,Chole Bhature,94.34,YES,YES,,,857.0,730.3,126.7,22.8,22.8,119.0,119.0,34.3,34.3
+007,Masala Dosa,Crispy Plain Dosa,76.9,NO,YES,Spicy Chutney / Garlic Powder,,368.0,161.5,206.5,8.7,7.6,61.5,62.0,9.9,6.4
+008,Crispy Plain Dosa,Crispy Plain Dosa,42.5,YES,YES,Spicy Chutney / Garlic Powder,Crushed Almonds / Nuts; Whipped Cream,282.0,242.8,39.2,6.6,9.7,52.1,55.3,5.8,17.1
+009,Idli with Sambar,Idli with Sambar,99.27,YES,YES,Spicy Chutney / Garlic Powder,,271.0,87.3,183.7,8.9,8.4,53.1,50.6,2.5,1.8
+010,Medu Vada,Idli with Sambar,37.7,NO,YES,Spicy Chutney / Garlic Powder,,347.0,38.4,308.6,10.0,5.3,37.5,32.2,17.5,1.1
+011,Kanda Poha,Moong Dal Khichdi,49.67,NO,NO,,,260.0,63.7,196.3,5.6,9.0,49.0,39.0,5.6,4.4
+012,Rava Vegetable Upma,Rava Vegetable Upma,86.76,YES,YES,,,240.0,82.5,157.5,6.0,6.0,44.0,44.0,5.0,5.0
+013,Aloo Paratha with Butter,Masala Dosa,48.53,NO,NO,,,432.0,134.2,297.8,8.6,7.4,64.8,53.1,15.8,8.3
+014,Stuffed Paneer Paratha,Crispy Plain Dosa,74.97,NO,YES,,,477.0,132.0,345.0,17.1,6.8,57.6,55.8,20.2,5.8
+016,Rajma Chawal,Chicken Biryani,44.28,NO,YES,,,472.0,586.9,114.9,18.2,32.2,82.2,75.2,9.8,16.8
+017,Dal Makhani,Dal Makhani,31.57,YES,YES,,,350.0,302.4,47.6,13.8,13.8,40.0,40.0,15.5,15.5
+018,Yellow Dal Tadka,Chicken Biryani,59.45,NO,NO,,Paneer / Tofu Cubes; Spicy Chutney / Garlic Powder,275.0,535.9,260.9,15.5,30.7,37.5,57.7,8.0,20.7
+019,Moong Dal Khichdi,Moong Dal Khichdi,92.0,YES,YES,,,345.0,162.2,182.8,13.5,13.5,58.5,58.5,6.6,6.6
+020,South Indian Curd Rice,Rajma Chawal,37.12,NO,NO,,,325.0,148.5,176.5,8.8,13.0,52.5,58.8,9.0,7.0
+021,Onion Tomato Uttapam,Rava Vegetable Upma,44.15,NO,YES,,,310.0,82.5,227.5,8.4,6.0,54.0,44.0,7.0,5.0
+022,Khaman Dhokla,Khaman Dhokla,99.42,YES,YES,,Spicy Chutney / Garlic Powder,240.0,279.7,39.7,8.7,9.2,39.8,42.3,5.7,6.4
+023,Vegetable Biryani / Pulao,Chicken Biryani,33.29,NO,YES,,,420.0,499.6,79.6,10.8,27.6,75.0,64.5,9.0,14.4
+024,Chicken Biryani,Mutton Biryani,62.4,NO,YES,,,577.0,535.8,41.2,32.2,40.2,75.2,73.5,16.8,26.2
+025,Mutton Biryani,Mutton Biryani,62.4,YES,YES,,,682.0,535.8,146.2,40.2,40.2,73.5,73.5,26.2,26.2
+026,Butter Chicken,Rajma Chawal,40.74,NO,YES,,,555.0,226.2,328.8,36.0,15.6,19.5,70.5,37.5,8.4
+027,Tandoori Chicken Tikka,Tandoori Chicken Tikka,83.6,YES,YES,,,300.0,326.9,26.9,48.0,48.0,5.0,5.0,9.6,9.6
+028,Paneer Butter Masala,Chole Bhature,43.77,NO,YES,,Paneer / Tofu Cubes,525.0,596.8,71.8,17.0,23.4,21.2,86.4,41.2,32.5
+029,Palak Paneer,Palak Paneer,77.39,YES,YES,,Crushed Almonds / Nuts; Spicy Chutney / Garlic Powder,362.0,297.6,64.4,18.8,22.5,15.5,21.2,26.2,34.4
+030,Spiced Fish Curry,Spiced Fish Curry,46.86,YES,YES,,Spicy Chutney / Garlic Powder,337.0,333.7,3.3,37.5,38.0,11.2,13.7,16.2,16.9
+031,Boiled Egg Curry,Pav Bhaji,32.16,NO,NO,,,350.0,203.1,146.9,26.2,9.5,13.8,61.2,22.0,13.8
+032,Butter Naan / Roti,Greek Yogurt Bowl,40.88,NO,YES,,Peanut Butter; Sliced Bananas; Honey / Maple Syrup; Grated / Melted Cheese; Whipped Cream,290.0,529.7,239.7,8.0,22.5,50.0,34.8,6.5,24.6
+033,Gulab Jamun,Gulab Jamun,87.92,YES,YES,,Honey / Maple Syrup,320.0,346.2,26.2,4.0,4.0,52.0,64.4,11.0,11.0
+034,Spongy Rasgulla,Spongy Rasgulla,49.74,YES,YES,,,185.0,71.8,113.2,4.5,4.5,38.0,38.0,1.8,1.8
+035,Crispy Jalebi,Crispy Jalebi,99.96,YES,YES,,,370.0,219.7,150.3,2.5,2.5,68.0,68.0,10.5,10.5
+036,Rice Kheer / Payasam,Rice Kheer / Payasam,48.11,YES,YES,Crushed Almonds / Nuts,Whipped Cream,350.0,154.6,195.4,10.4,7.6,43.0,42.3,16.5,13.5
+037,Gajar Ka Halwa,Gajar Ka Halwa,99.25,YES,YES,Crushed Almonds / Nuts,,477.0,404.5,72.5,9.5,6.3,54.2,51.0,25.5,18.0
+038,Masala Chai / Milk Tea,Masala Chai / Milk Tea,96.8,YES,YES,,,117.0,156.7,39.7,3.8,3.8,15.3,15.3,4.5,4.5
+039,Sweet Mango / Yogurt Lassi,Sweet Mango / Yogurt Lassi,78.89,YES,YES,,Whipped Cream,238.0,149.4,88.6,9.0,9.4,36.2,38.7,7.0,11.5
+040,Steamed Momos / Dumplings,Steamed Momos / Dumplings,88.1,YES,YES,Spicy Chutney / Garlic Powder,Peanut Butter; Paneer / Tofu Cubes,270.0,303.5,33.5,14.5,26.2,40.3,43.2,6.1,23.4
+041,Cheeseburger,Cheeseburger,96.46,YES,YES,Grated / Melted Cheese,,650.0,584.3,65.7,35.1,31.9,53.6,58.8,33.3,28.2
+042,Cheese Pizza,Stuffed Paneer Paratha,54.87,NO,YES,Grated / Melted Cheese,,765.0,545.3,219.7,34.0,26.1,83.3,88.0,33.0,30.8
+043,French Fries,French Fries,99.83,YES,YES,,,468.0,418.8,49.2,5.1,5.1,62.2,62.2,22.5,22.5
+044,Chicken Caesar Salad,Chicken Caesar Salad,62.38,YES,YES,Grated / Melted Cheese,,412.0,347.3,64.7,27.8,23.4,12.1,12.4,28.0,22.0
+045,Spaghetti Bolognese,Pad Thai Noodles,81.33,NO,YES,Grated / Melted Cheese,,607.0,524.5,82.5,32.8,26.2,63.8,97.5,24.8,18.8
+046,Herb Grilled Chicken Breast,Grilled Beef Steak,14.91,NO,YES,,,330.0,253.2,76.8,62.0,52.0,1.0,0.0,7.2,24.0
+047,Club Sandwich,Club Sandwich,97.63,YES,YES,,Spicy Chutney / Garlic Powder,484.0,274.2,209.8,23.1,23.6,57.2,59.7,17.6,18.3
+048,Grilled Beef Steak,Grilled Beef Steak,99.01,YES,YES,,Spicy Chutney / Garlic Powder,537.0,380.3,156.7,65.0,65.5,0.0,2.5,30.0,30.7
+049,Hot Dog with Bun,Hot Dog with Bun,97.99,YES,YES,,Spicy Chutney / Garlic Powder,406.0,221.5,184.5,14.3,14.8,30.8,33.3,25.2,25.9
+050,Mexican Tacos,Ice Cream Scoop / Sundae,19.24,NO,NO,Grated / Melted Cheese,Chia / Flax Seeds; Honey / Maple Syrup; Chocolate Chips / Drizzle,520.0,466.6,53.4,26.5,10.4,40.8,80.1,28.0,32.1
+051,Baked Cheesy Lasagna,Baked Cheesy Lasagna,30.0,YES,YES,Grated / Melted Cheese,Crushed Almonds / Nuts; Grated / Melted Cheese; Paneer / Tofu Cubes; Spicy Chutney / Garlic Powder,625.0,713.3,88.3,35.0,48.3,50.3,61.5,33.5,51.8
+052,Macaroni and Cheese,Macaroni and Cheese,98.31,YES,YES,Grated / Melted Cheese,Grated / Melted Cheese,637.0,517.0,120.0,25.2,27.1,65.8,72.3,31.0,33.3
+053,Crispy Fried Chicken,Cheeseburger,80.05,NO,NO,,,560.0,477.2,82.8,44.0,26.0,24.0,48.0,33.0,23.0
+054,Fluffy Buttermilk Pancakes,Fluffy Buttermilk Pancakes,92.47,YES,YES,Honey / Maple Syrup,,454.0,263.7,190.3,11.5,12.5,80.8,74.1,9.9,10.7
+055,Belgian Waffles with Syrup,Belgian Waffles with Syrup,71.88,YES,YES,Honey / Maple Syrup,Sliced Bananas; Fresh Blueberries; Honey / Maple Syrup; Chocolate Chips / Drizzle; Fried / Poached Egg; Spicy Chutney / Garlic Powder; Whipped Cream,568.0,723.9,155.9,12.6,22.5,88.0,125.0,18.9,37.2
+056,Butter Croissant,Butter Croissant,83.1,YES,YES,,Peanut Butter; Sliced Bananas; Crushed Almonds / Nuts; Chia / Flax Seeds; Honey / Maple Syrup; Chocolate Chips / Drizzle; Grated / Melted Cheese; Spicy Chutney / Garlic Powder; Whipped Cream,325.0,804.4,479.4,6.6,25.3,36.6,87.2,16.8,55.0
+057,Chocolate Fudge Cake,Chocolate Fudge Cake,100.0,YES,YES,Chocolate Chips / Drizzle,Chia / Flax Seeds,520.0,387.8,132.2,6.2,7.8,73.1,75.8,24.0,25.4
+058,Ice Cream Scoop / Sundae,Gajar Ka Halwa,36.82,NO,YES,Chocolate Chips / Drizzle,Chia / Flax Seeds,323.0,416.3,93.3,5.0,7.4,38.3,50.1,17.4,19.3
+059,Fluffy Scrambled Eggs,Rava Vegetable Upma,48.5,NO,YES,,,223.0,47.4,175.6,15.0,4.5,2.4,33.0,16.5,3.8
+060,Boiled Eggs (2 Large),Grilled Salmon Fillet,45.38,NO,NO,,,155.0,177.1,22.1,13.0,22.0,1.1,0.0,11.0,13.0
+061,Avocado Toast on Sourdough,Avocado Toast on Sourdough,97.56,YES,YES,,Spicy Chutney / Garlic Powder,285.0,302.8,17.8,7.5,8.0,27.0,29.5,16.5,17.2
+062,Grilled Salmon Fillet,Grilled Salmon Fillet,94.39,YES,YES,,,416.0,326.8,89.2,44.0,44.0,0.0,0.0,26.0,26.0
+063,Mixed Vegetable Curry,Pav Bhaji,26.26,NO,YES,,Paneer / Tofu Cubes; Spicy Chutney / Garlic Powder,237.0,326.1,89.1,7.0,17.2,28.8,65.1,10.5,22.5
+064,Mediterranean Green Salad,Herb Grilled Chicken Breast,73.23,NO,NO,,,90.0,339.9,249.9,3.6,62.0,8.4,1.0,5.0,7.2
+065,Fresh Fruit Medley,Fresh Fruit Medley,93.53,YES,YES,,Sliced Bananas; Fresh Blueberries; Chia / Flax Seeds; Chocolate Chips / Drizzle,145.0,418.4,273.4,2.0,5.3,36.2,65.7,0.5,8.1
+066,Greek Yogurt Bowl,Oatmeal Porridge Bowl,65.02,NO,YES,,Fresh Blueberries,146.0,67.3,78.7,20.0,6.6,7.2,37.3,3.8,3.7
+067,Cheeseburger,Cheeseburger,98.32,YES,YES,Grated / Melted Cheese,Grated / Melted Cheese,650.0,684.3,34.3,35.1,38.4,53.6,59.6,33.3,36.2
+068,Cheese Pizza,Stuffed Paneer Paratha,54.87,NO,YES,Grated / Melted Cheese,,765.0,545.3,219.7,34.0,26.1,83.3,88.0,33.0,30.8
+069,Belgian Waffles with Syrup,Belgian Waffles with Syrup,97.91,YES,YES,Fresh Blueberries; Honey / Maple Syrup,Fresh Blueberries,585.0,497.5,87.5,12.8,16.0,92.3,98.8,19.0,23.7
+070,Fluffy Scrambled Eggs,Avocado Toast on Sourdough,69.23,NO,NO,,Spicy Chutney / Garlic Powder,223.0,302.8,79.8,15.0,8.0,2.4,29.5,16.5,17.2
+071,Japanese Ramen Bowl,Japanese Ramen Bowl,97.53,YES,YES,Fried / Poached Egg,,585.0,470.5,114.5,26.5,22.5,67.9,75.0,24.1,19.0
+072,Salmon Sushi Roll,Salmon Sushi Roll,98.79,YES,YES,,,284.0,104.9,179.1,13.0,13.0,44.0,44.0,5.6,5.6
+073,Steamed Dim Sum Dumplings,Steamed Dim Sum Dumplings,99.82,YES,YES,,,243.0,222.9,20.1,14.4,14.4,32.4,32.4,5.8,5.8
+074,Chicken Fried Rice,Vegetable Biryani / Pulao,80.61,NO,YES,,,489.0,247.6,241.4,18.6,10.8,73.5,75.0,13.5,9.0
+075,Pad Thai Noodles,Pad Thai Noodles,99.94,YES,YES,Crushed Almonds / Nuts,Crushed Almonds / Nuts; Honey / Maple Syrup; Grated / Melted Cheese; Spicy Chutney / Garlic Powder,657.0,681.9,24.9,25.6,33.6,86.4,106.0,23.5,33.0
+076,Crispy Spring Rolls,Crispy Spring Rolls,97.84,YES,YES,,,315.0,130.1,184.9,6.8,6.8,42.0,42.0,13.8,13.8
+077,Steamed Momos / Dumplings,Steamed Momos / Dumplings,88.1,YES,YES,Spicy Chutney / Garlic Powder,Peanut Butter; Paneer / Tofu Cubes,270.0,303.5,33.5,14.5,26.2,40.3,43.2,6.1,23.4
+078,Japanese Ramen Bowl,Japanese Ramen Bowl,99.7,YES,YES,Fried / Poached Egg,,585.0,470.5,114.5,26.5,22.5,67.9,75.0,24.1,19.0
+079,Salmon Sushi Roll,Salmon Sushi Roll,98.12,YES,YES,,,284.0,104.9,179.1,13.0,13.0,44.0,44.0,5.6,5.6
+080,Chicken Fried Rice,Bhel Puri / Chaat,73.98,NO,YES,,Spicy Chutney / Garlic Powder,489.0,546.8,57.8,18.6,13.1,73.5,94.0,13.5,12.1
+081,Crispy Spring Rolls,Masala Dosa,31.82,NO,YES,,Spicy Chutney / Garlic Powder,315.0,108.8,206.2,6.8,6.6,42.0,46.7,13.8,7.6
+082,Steamed Dim Sum Dumplings,Steamed Dim Sum Dumplings,98.8,YES,YES,,,243.0,222.9,20.1,14.4,14.4,32.4,32.4,5.8,5.8
+083,Pad Thai Noodles,Spiced Fish Curry,25.59,NO,NO,,Crushed Almonds / Nuts,570.0,482.4,87.6,22.4,51.2,83.2,17.6,16.0,28.3
+084,Japanese Ramen Bowl,Japanese Ramen Bowl,99.7,YES,YES,,,495.0,388.1,106.9,20.2,20.2,67.5,67.5,17.1,17.1
+085,Steamed Momos / Dumplings,Steamed Momos / Dumplings,88.1,YES,YES,Spicy Chutney / Garlic Powder,Peanut Butter; Paneer / Tofu Cubes,270.0,303.5,33.5,14.5,26.2,40.3,43.2,6.1,23.4
+086,Oatmeal Porridge Bowl,Oatmeal Porridge Bowl,38.99,YES,YES,Peanut Butter; Sliced Bananas,Peanut Butter; Grated / Melted Cheese,400.0,360.8,39.2,13.6,21.7,56.8,57.6,14.7,23.8
+087,Oatmeal Porridge Bowl,Oatmeal Porridge Bowl,38.99,YES,YES,Fresh Blueberries; Crushed Almonds / Nuts,Peanut Butter; Grated / Melted Cheese,341.0,334.7,6.3,11.4,20.9,48.8,53.5,12.1,23.3
+088,Oatmeal Porridge Bowl,Oatmeal Porridge Bowl,38.99,YES,YES,Chia / Flax Seeds; Honey / Maple Syrup,Peanut Butter; Grated / Melted Cheese,332.0,317.9,14.1,9.7,20.3,57.8,50.2,7.6,23.0
+089,Greek Yogurt Bowl,Oatmeal Porridge Bowl,65.02,NO,YES,Fresh Blueberries; Honey / Maple Syrup,Fresh Blueberries,209.0,93.4,115.6,20.2,8.0,23.9,44.7,3.9,4.5
+090,Greek Yogurt Bowl,Oatmeal Porridge Bowl,65.02,NO,YES,Crushed Almonds / Nuts; Honey / Maple Syrup,Fresh Blueberries,279.0,83.3,195.7,23.2,7.6,22.8,42.2,11.3,4.2
+091,Avocado Toast on Sourdough,Avocado Toast on Sourdough,97.56,YES,YES,Fried / Poached Egg,Spicy Chutney / Garlic Powder,375.0,380.6,5.6,13.8,10.5,27.4,38.5,23.5,22.7
+092,Fluffy Buttermilk Pancakes,Butter Croissant,67.53,NO,NO,Sliced Bananas; Honey / Maple Syrup,,500.0,879.4,379.4,12.1,20.1,92.3,112.2,10.1,51.5
+093,Belgian Waffles with Syrup,Belgian Waffles with Syrup,71.88,YES,YES,Chocolate Chips / Drizzle; Honey / Maple Syrup,Sliced Bananas; Fresh Blueberries; Honey / Maple Syrup; Chocolate Chips / Drizzle; Fried / Poached Egg; Spicy Chutney / Garlic Powder; Whipped Cream,643.0,772.5,129.5,13.4,23.5,97.5,131.3,23.1,38.8
+094,Chicken Caesar Salad,Chicken Caesar Salad,97.84,YES,YES,Grated / Melted Cheese,Crushed Almonds / Nuts; Paneer / Tofu Cubes,412.0,539.3,127.3,27.8,33.8,12.1,17.0,28.0,37.5
+095,Cheeseburger,Cheeseburger,98.51,YES,YES,Grated / Melted Cheese,,650.0,584.3,65.7,35.1,31.9,53.6,58.8,33.3,28.2
+096,Masala Dosa,Masala Dosa,45.28,YES,YES,Spicy Chutney / Garlic Powder,,386.0,198.6,187.4,9.2,9.0,64.0,64.9,10.6,10.1
+097,Vada Pav,Vada Pav,27.71,YES,YES,Spicy Chutney / Garlic Powder,,301.0,246.9,54.1,6.2,8.8,43.0,64.6,11.9,17.8
+098,Moong Dal Khichdi,Moong Dal Khichdi,92.0,YES,YES,,,345.0,162.2,182.8,13.5,13.5,58.5,58.5,6.6,6.6
+099,Chicken Biryani,Mutton Biryani,62.4,NO,YES,,,577.0,535.8,41.2,32.2,40.2,75.2,73.5,16.8,26.2
+100,Oatmeal Porridge Bowl,Oatmeal Porridge Bowl,38.99,YES,YES,Fresh Blueberries; Crushed Almonds / Nuts; Chia / Flax Seeds,Peanut Butter; Grated / Melted Cheese,390.0,344.6,45.4,13.1,21.3,53.0,55.1,15.2,23.5
