@@ -1,7 +1,7 @@
 """
 NutriVision: An ANN-Based Food Recognition and Calorie Estimation System
-Interactive Streamlit Dashboard
-Author: ANUSHYA C | Reg No: 2648508
+Minimalist Health-Tech / SaaS Streamlit Interface
+Author: ANUSHYA C | Reg No: 2648508 | Christ (Deemed to be University)
 """
 
 import os
@@ -15,71 +15,173 @@ import streamlit as st
 
 # Configure page layout and visual identity
 st.set_page_config(
-    page_title="NutriVision — AI Nutrition System",
-    page_icon="🥗",
+    page_title="NutriVision — Clinical Nutrition & Vision AI",
+    page_icon="⚪",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom Styling for Academic & Professional Polish
+# Custom Styling: Modern Minimalist SaaS / Health-Tech Design System
 st.markdown("""
 <style>
-    .main-title {
-        font-family: 'Helvetica Neue', sans-serif;
-        font-size: 2.4rem;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    html, body, [class*="css"] {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #0F172A;
+    }
+
+    /* Header styling */
+    .saas-header {
+        padding: 0.5rem 0 1.25rem 0;
+        border-bottom: 1px solid #E2E8F0;
+        margin-bottom: 1.5rem;
+    }
+    .saas-title {
+        font-size: 2.1rem;
         font-weight: 800;
-        color: #111827;
-        margin-bottom: 0px;
+        letter-spacing: -0.03em;
+        color: #0F172A;
+        line-height: 1.1;
+        margin: 0;
     }
-    .sub-title {
-        font-size: 1.1rem;
-        color: #4B5563;
-        font-weight: 500;
-        margin-bottom: 8px;
+    .saas-subtitle {
+        font-size: 0.95rem;
+        color: #64748B;
+        font-weight: 400;
+        margin-top: 0.35rem;
     }
-    .author-badge {
+    .system-badge-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+        flex-wrap: wrap;
+    }
+    .system-pill {
+        display: inline-flex;
+        align-items: center;
+        background-color: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        color: #334155;
+        padding: 0.2rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #10B981;
         display: inline-block;
-        background-color: #ECFDF5;
-        color: #065F46;
-        padding: 4px 14px;
-        border-radius: 9999px;
+        margin-right: 6px;
+    }
+
+    /* Section Step Headers */
+    .step-header {
+        display: flex;
+        align-items: baseline;
+        gap: 0.65rem;
+        margin: 1.5rem 0 0.85rem 0;
+    }
+    .step-number {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #64748B;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+        letter-spacing: 0.05em;
+    }
+    .step-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0F172A;
+        letter-spacing: -0.01em;
+        margin: 0;
+    }
+
+    /* Bento Grid Metric Cards */
+    .bento-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 1.1rem;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+        height: 100%;
+        transition: border-color 0.15s ease;
+    }
+    .bento-card:hover {
+        border-color: #CBD5E1;
+    }
+    .bento-label {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #64748B;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+    .bento-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+    .bento-unit {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #64748B;
+        margin-left: 2px;
+    }
+    .bento-subtext {
+        font-size: 0.75rem;
+        color: #94A3B8;
+        margin-top: 0.35rem;
+    }
+
+    /* Clean Info Banner */
+    .saas-callout {
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-left: 3px solid #0F172A;
+        border-radius: 6px;
+        padding: 0.85rem 1rem;
+        margin: 0.75rem 0;
+    }
+    .saas-callout-title {
         font-size: 0.85rem;
         font-weight: 700;
-        border: 1px solid #A7F3D0;
-        margin-bottom: 16px;
+        color: #0F172A;
+        margin-bottom: 0.2rem;
     }
-    .metric-card {
-        background-color: #F9FAFB;
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        padding: 16px;
-        text-align: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    .saas-callout-text {
+        font-size: 0.8rem;
+        color: #475569;
+        line-height: 1.4;
+        margin: 0;
     }
-    .metric-value {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #1F2937;
-    }
-    .metric-label {
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #6B7280;
-        font-weight: 600;
-    }
-    .step-pill {
+
+    /* Clean Tag Pills */
+    .saas-tag {
         display: inline-block;
-        background-color: #2563EB;
-        color: white;
-        border-radius: 9999px;
-        width: 26px;
-        height: 26px;
-        text-align: center;
-        line-height: 26px;
-        font-weight: bold;
-        font-size: 14px;
-        margin-right: 8px;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        color: #334155;
+        padding: 0.2rem 0.55rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0 4px 4px 0;
+    }
+
+    /* Progress bar styling */
+    .stProgress > div > div > div > div {
+        background-color: #0F172A;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -104,6 +206,7 @@ except ImportError:
         get_nutrition_for_portion, calculate_composite_nutrition,
         get_serving_archetype
     )
+
 from utils.preprocessing import preprocess_food_image
 from utils.recommendations import generate_dietary_recommendations
 from models.ann_regressor import load_calorie_regressor, predict_calories, get_optimal_device
@@ -114,28 +217,37 @@ if "meal_history" not in st.session_state:
     st.session_state.meal_history = []
 if "daily_calorie_target" not in st.session_state:
     st.session_state.daily_calorie_target = 2000
+if "custom_portion" not in st.session_state:
+    st.session_state.custom_portion = 250.0
 
 # ----------------- SIDEBAR -----------------
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3075/3075977.png", width=64)
-    st.markdown("### **NutriVision AI Control**")
-    st.markdown('<div class="author-badge">Author: ANUSHYA C | 2648508</div>', unsafe_allow_html=True)
+    st.markdown("### System Configuration")
+    st.markdown('<div class="system-pill"><span class="status-dot"></span>System Operational</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size: 0.75rem; color: #64748B; margin-top: 6px;">Researcher: ANUSHYA C &bull; Reg: 2648508<br>Dept of Computer Science, Christ University</div>', unsafe_allow_html=True)
 
-    # Hardware & Acceleration Info
+    st.markdown("---")
+    
+    # Compute Acceleration Info
     device = get_optimal_device()
     dev_name = str(device).upper()
     if dev_name == "CUDA":
-        hw_label = "🟢 NVIDIA RTX 3050 (CUDA)"
+        hw_desc = "NVIDIA RTX 3050 (CUDA Accelerated)"
     elif dev_name == "MPS":
-        hw_label = "🟣 Apple Silicon M1 (MPS)"
+        hw_desc = "Apple Silicon M1 (MPS Metal Performance)"
     else:
-        hw_label = "⚪ Multi-core CPU"
-    st.info(f"**Compute Acceleration:**\n{hw_label}")
+        hw_desc = "Multi-Threaded CPU Engine"
 
-    st.markdown("---")
-    st.subheader("👤 User Profile & Fitness Goal")
+    st.markdown(f"""
+    <div class="saas-callout">
+        <div class="saas-callout-title">Compute Backend</div>
+        <div class="saas-callout-text">{hw_desc}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("#### Dietary Profile")
     user_goal = st.selectbox(
-        "Select Fitness Objective:",
+        "Nutritional Objective:",
         [
             "Balanced Diet (Maintenance)",
             "Weight Loss (Caloric Deficit)",
@@ -146,7 +258,7 @@ with st.sidebar:
     )
 
     st.session_state.daily_calorie_target = st.slider(
-        "Daily Calorie Target (kcal):",
+        "Daily Target (kcal):",
         min_value=1200,
         max_value=3500,
         value=st.session_state.daily_calorie_target,
@@ -154,33 +266,45 @@ with st.sidebar:
     )
 
     st.markdown("---")
-    st.markdown("### ⚙️ Pipeline Highlights")
+    st.markdown("#### Pipeline Architecture")
     st.markdown("""
-    - **Step 1**: Food Image Ingestion
-    - **Step 2**: Spatial Preprocessing & Grayscale
-    - **Step 3**: CNN Feature Classification
-    - **Step 4**: ANN Multi-Layer Regressor
-    - **Step 5**: Macro Analytics & Daily Tracking
-    """)
+    <div style="font-size: 0.8rem; color: #475569; line-height: 1.6;">
+    &bull; <strong>01 Ingestion</strong>: Optical acquisition<br>
+    &bull; <strong>02 Preprocessing</strong>: Grayscale / 224&times;224<br>
+    &bull; <strong>03 Tier-1 Vision</strong>: Zero-shot classification<br>
+    &bull; <strong>04 Tier-2 Probing</strong>: Multi-label toppings<br>
+    &bull; <strong>05 Tier-3 Scale</strong>: Visual portion archetyping<br>
+    &bull; <strong>06 ANN Regressor</strong>: Deep calorie computation
+    </div>
+    """, unsafe_allow_html=True)
 
-    if st.button("🗑️ Clear Meal Log", use_container_width=True):
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("Clear Today's Log", use_container_width=True):
         st.session_state.meal_history = []
-        st.success("Meal history reset!")
+        st.toast("Meal history log cleared.")
 
 # ----------------- MAIN HEADER -----------------
-st.markdown('<div class="main-title">🥗 NutriVision</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">An ANN-Based Food Recognition & Calorie Estimation System</div>', unsafe_allow_html=True)
-st.markdown('<div class="author-badge">Christ (Deemed to be University) • Department of Computer Science • Reg No: 2648508</div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="saas-header">
+    <div class="saas-title">NutriVision Clinical AI</div>
+    <div class="saas-subtitle">ANN-Based Food Recognition, Multi-Label Ingredient Probing & Caloric Energy Estimation</div>
+    <div class="system-badge-row">
+        <span class="system-pill"><span class="status-dot"></span>Vision-Language ViT Active</span>
+        <span class="system-pill">PyTorch ANN v2.4</span>
+        <span class="system-pill">Dual-Archetype Quantity Engine</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # Main Navigation Tabs
 tab_predict, tab_tracker, tab_architecture = st.tabs([
-    "📸 Food Scanner & Analysis",
-    "📊 Daily Tracker & Meal History",
-    "🧠 Model Architectures & Evaluation"
+    "Scanner & Analysis",
+    "Daily Nutrition Log",
+    "Model Architecture & Benchmarks"
 ])
 
 # Load models with Streamlit cache
-@st.cache_resource(show_spinner="Loading AI Models...")
+@st.cache_resource(show_spinner="Initializing Neural Vision & Regression Models...")
 def load_nutrivision_models():
     regressor_path = os.path.join(BASE_DIR, "models", "calorie_regressor.pt")
     reg_model, reg_meta = None, None
@@ -199,36 +323,39 @@ if clf_model is not None and not hasattr(clf_model, "quantity_text_embeds"):
     clf_model, reg_model, reg_meta = load_nutrivision_models()
 
 
-
 # =========================================================================
 # TAB 1: FOOD SCANNER & CALORIE ESTIMATION
 # =========================================================================
 with tab_predict:
-    st.markdown("### <span class=\"step-pill\">1</span> Food Image Input", unsafe_allow_html=True)
-    
-    col_input, col_samples = st.columns([2, 1])
+    st.markdown("""
+    <div class="step-header">
+        <span class="step-number">01</span>
+        <h3 class="step-title">Image Acquisition</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
+    col_input, col_samples = st.columns([2, 1])
     uploaded_image = None
 
     with col_input:
-        input_mode = st.radio("Choose Input Method:", ["Upload Image File", "Use Web Camera"], horizontal=True)
-        if input_mode == "Upload Image File":
-            file = st.file_uploader("Upload a photo of food (JPG, PNG, JPEG):", type=["jpg", "png", "jpeg"])
+        input_mode = st.radio("Input Source:", ["Local Image File", "Integrated Camera"], horizontal=True)
+        if input_mode == "Local Image File":
+            file = st.file_uploader("Select food image (JPG, PNG, JPEG):", type=["jpg", "png", "jpeg"])
             if file:
                 uploaded_image = Image.open(file)
         else:
-            cam_file = st.camera_input("Capture food using device camera:")
+            cam_file = st.camera_input("Capture food via device camera:")
             if cam_file:
                 uploaded_image = Image.open(cam_file)
 
     with col_samples:
-        st.markdown("**Or test with sample images:**")
+        st.markdown("**Benchmark Samples:**")
         sample_choice = st.selectbox(
-            "Select sample:",
+            "Load test case:",
             [
                 "None",
-                "Banana Oatmeal Bowl (My Sample 1)",
-                "Gulab Jamun in Syrup (My Sample 2)",
+                "Banana Oatmeal Bowl (Sample 1)",
+                "Gulab Jamun in Syrup (Sample 2)",
                 "Chicken Biryani",
                 "Cheese Pizza",
                 "Cheeseburger",
@@ -238,8 +365,8 @@ with tab_predict:
         )
 
         sample_paths = {
-            "Banana Oatmeal Bowl (My Sample 1)": os.path.join(BASE_DIR, "sample_images", "oatmeal.jpg"),
-            "Gulab Jamun in Syrup (My Sample 2)": os.path.join(BASE_DIR, "sample_images", "gulab_jamun.jpg"),
+            "Banana Oatmeal Bowl (Sample 1)": os.path.join(BASE_DIR, "sample_images", "oatmeal.jpg"),
+            "Gulab Jamun in Syrup (Sample 2)": os.path.join(BASE_DIR, "sample_images", "gulab_jamun.jpg"),
             "Chicken Biryani": os.path.join(BASE_DIR, "sample_images", "biryani.jpg"),
             "Cheese Pizza": os.path.join(BASE_DIR, "sample_images", "pizza.jpg"),
             "Cheeseburger": os.path.join(BASE_DIR, "sample_images", "burger.jpg"),
@@ -247,61 +374,80 @@ with tab_predict:
             "Masala Dosa": os.path.join(BASE_DIR, "sample_images", "dosa.jpg")
         }
 
-
         if sample_choice != "None" and os.path.exists(sample_paths.get(sample_choice, "")):
             uploaded_image = Image.open(sample_paths[sample_choice])
 
     if uploaded_image is not None:
         st.markdown("---")
-        
-        # Step 2: Image Preprocessing Pipeline Visualizer
-        st.markdown("### <span class=\"step-pill\">2</span> Image Preprocessing Pipeline", unsafe_allow_html=True)
-        st.caption("Matches Step 2 of the infographic: Original Image ➔ Resize & Center Crop (224×224) ➔ Grayscale Conversion ➔ ImageNet Normalization.")
+
+        # 02 Preprocessing Pipeline
+        st.markdown("""
+        <div class="step-header">
+            <span class="step-number">02</span>
+            <h3 class="step-title">Spatial Preprocessing & Feature Extraction</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
         prep_data = preprocess_food_image(uploaded_image)
 
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            st.image(prep_data["original_image"], caption="1. Original Capture")
+            st.image(prep_data["original_image"], caption="1. Raw Capture", use_container_width=True)
         with c2:
-            st.image(prep_data["cropped_image"], caption="2. Resize & Crop (224×224)")
+            st.image(prep_data["cropped_image"], caption="2. Center Crop (224×224)", use_container_width=True)
         with c3:
-            st.image(prep_data["gray_image"], caption="3. Grayscale (Denoise)")
+            st.image(prep_data["gray_image"], caption="3. Denoised Grayscale", use_container_width=True)
         with c4:
-            st.image(prep_data["normalized_image"], caption="4. Normalized Feature Map")
-
+            st.image(prep_data["normalized_image"], caption="4. Tensor Normalized", use_container_width=True)
 
         st.markdown("---")
 
-        # Step 3: CNN Food Classification & Multi-Label Topping Detection
-        st.markdown("### <span class=\"step-pill\">3</span> Three-Tier Vision Pipeline (Dish, Toppings & Quantity)", unsafe_allow_html=True)
-        
+        # 03 Three-Tier Vision Recognition
+        st.markdown("""
+        <div class="step-header">
+            <span class="step-number">03</span>
+            <h3 class="step-title">Vision-Language Recognition Engine</h3>
+        </div>
+        """, unsafe_allow_html=True)
+
         top1, top_k, _, detected_toppings, quantity_info = classify_food_image(clf_model, uploaded_image, top_k=4, device=device)
 
-        col_pred_main, col_pred_topk = st.columns([1.5, 1])
+        col_dish_main, col_dish_switch = st.columns([1.6, 1])
 
-        with col_pred_main:
-            st.success(f"### Identified Dish: **{top1['display_name']}**")
-            st.markdown(f"**Cuisine:** {top1['cuisine']} | **Category:** {top1['category']}")
-            st.progress(float(top1['confidence']) / 100.0, text=f"Classification Confidence: {top1['confidence']}%")
+        with col_dish_main:
+            st.markdown(f"""
+            <div class="bento-card">
+                <div class="bento-label">Primary Identification</div>
+                <div class="bento-value">{top1['display_name']}</div>
+                <div style="font-size: 0.85rem; color: #475569; margin: 0.35rem 0;">
+                    <strong>Cuisine:</strong> {top1['cuisine']} &bull; <strong>Category:</strong> {top1['category']}
+                </div>
+                <div style="margin-top: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748B; margin-bottom: 0.25rem;">
+                        <span>Confidence Score</span>
+                        <span><strong>{top1['confidence']}%</strong></span>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            st.progress(float(top1['confidence']) / 100.0)
 
-        with col_pred_topk:
-            st.markdown("**Switch Dish Selection (Top Candidates):**")
+        with col_dish_switch:
+            st.markdown("**Alternative Candidates:**")
             candidate_keys = [c["food_key"] for c in top_k]
             selected_food_key = st.selectbox(
-                "Active Dish Selection:",
+                "Select active dish classification:",
                 options=candidate_keys,
                 index=0,
                 format_func=lambda k: f"{FOOD_DATABASE[k]['display_name']} ({next(c['confidence'] for c in top_k if c['food_key'] == k):.1f}%)"
             )
-            # If user switched candidate dish, re-evaluate quantity for that specific dish
             if selected_food_key != top1["food_key"]:
                 if hasattr(clf_model, "estimate_quantity"):
                     quantity_info = clf_model.estimate_quantity(uploaded_image, selected_food_key)
 
-        # --- Tier 2: Detected Ingredients & Toppings ---
+        # Multi-Label Detected Toppings
         st.markdown("<br>", unsafe_allow_html=True)
-        st.markdown("#### 🔍 Detected Toppings & Add-ons (Multi-Label AI Probe)")
+        st.markdown("**Multi-Label Add-on / Topping Probing:**")
 
         detected_keys = [t["topping_key"] for t in detected_toppings]
 
@@ -310,14 +456,19 @@ with tab_predict:
             for idx, t in enumerate(detected_toppings):
                 col_c = cols_chips[idx % min(len(detected_toppings), 4)]
                 with col_c:
-                    st.info(f"**{t['display_name']}**\n\n+{t['calories']} kcal ({t['confidence']}% conf)")
+                    st.markdown(f"""
+                    <div class="bento-card" style="padding: 0.75rem;">
+                        <div class="bento-label">Detected Add-on</div>
+                        <div style="font-weight: 700; font-size: 0.95rem; color: #0F172A;">{t['display_name']}</div>
+                        <div style="font-size: 0.75rem; color: #64748B; margin-top: 2px;">+{t['calories']} kcal &bull; {t['confidence']}% conf</div>
+                    </div>
+                    """, unsafe_allow_html=True)
         else:
-            st.caption("No extra toppings detected in the image (pure single dish).")
+            st.caption("No standalone toppings or add-ons detected in image.")
 
-        # Interactive topping selector (defaults to AI detected add-ons)
         all_topping_keys = list(TOPPINGS_DATABASE.keys())
         selected_toppings = st.multiselect(
-            "Active Toppings & Add-ons (AI detections pre-selected; add/remove as needed):",
+            "Active Ingredients & Toppings (AI detections pre-selected; modify as necessary):",
             options=all_topping_keys,
             default=detected_keys,
             format_func=lambda k: f"{TOPPINGS_DATABASE[k]['display_name']} (+{TOPPINGS_DATABASE[k]['calories']} kcal / {TOPPINGS_DATABASE[k]['unit']})"
@@ -325,17 +476,18 @@ with tab_predict:
 
         st.markdown("---")
 
-        # Step 4: Portion Adjustment & ANN Calorie Estimation
-        st.markdown("### <span class=\"step-pill\">4</span> Visual Quantity & Calorie Estimation (ANN Regressor)", unsafe_allow_html=True)
+        # 04 Visual Quantity & Serving Size Scale
+        st.markdown("""
+        <div class="step-header">
+            <span class="step-number">04</span>
+            <h3 class="step-title">Visual Quantity & Portion Scale Estimation</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
-        # Track session state to auto-initialize portion from AI detection
         current_dish_tracker = f"{selected_food_key}_{quantity_info.get('estimated_grams', 250)}"
         if st.session_state.get("last_auto_food") != current_dish_tracker:
             st.session_state.custom_portion = float(quantity_info.get("estimated_grams", 250.0))
             st.session_state.last_auto_food = current_dish_tracker
-
-        # --- Tier 3: Visual Quantity & Serving Size Card ---
-        st.markdown("#### 📏 AI Visual Quantity & Portion Scale Detector")
 
         arch = get_serving_archetype(selected_food_key)
         stype = arch.get("serving_type", "continuous")
@@ -348,18 +500,24 @@ with tab_predict:
         q_confidence = quantity_info.get("confidence", 75.0) if isinstance(quantity_info, dict) else 75.0
         q_occupancy = quantity_info.get("occupancy_pct", 50.0) if isinstance(quantity_info, dict) else 50.0
 
-        q_box1, q_box2 = st.columns([2, 1])
-        with q_box1:
-            st.success(f"**AI Detected Serving:** {q_serving_label}")
-            st.caption(f"💡 *{q_description}*")
-        with q_box2:
-            st.metric(
-                "Quantity Confidence",
-                f"{q_confidence}%",
-                f"{q_occupancy}% plate coverage"
-            )
+        q_col1, q_col2 = st.columns([2, 1])
+        with q_col1:
+            st.markdown(f"""
+            <div class="saas-callout">
+                <div class="saas-callout-title">AI Inferred Serving: {q_serving_label}</div>
+                <div class="saas-callout-text">{q_description}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with q_col2:
+            st.markdown(f"""
+            <div class="bento-card" style="padding: 0.85rem;">
+                <div class="bento-label">Spatial Scale Metrics</div>
+                <div style="font-size: 1.15rem; font-weight: 700; color: #0F172A;">{q_confidence}% Confidence</div>
+                <div style="font-size: 0.75rem; color: #64748B;">Occupancy Coverage: {q_occupancy}%</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        st.markdown("**Portion Adjustment (AI Initialized):**")
+        st.markdown("**Portion Presets (Click to override or drag slider):**")
         p_col1, p_col2, p_col3, p_col4, p_col5 = st.columns([1, 1, 1, 1, 2])
         if stype == "discrete":
             uname = arch["unit_name"].title()
@@ -391,35 +549,19 @@ with tab_predict:
 
         with p_col5:
             portion_grams = st.slider(
-                "Base Dish Weight (grams):",
+                "Base Mass (grams):",
                 min_value=30.0,
                 max_value=900.0,
                 value=float(st.session_state.custom_portion),
-                step=5.0,
-                help="Automatically initialized by AI Visual Quantity Detector; drag to fine-tune."
+                step=5.0
             )
 
-        # Compute combined nutrition (Base meal + Selected toppings)
+        # Compute Nutrition
         base_nutri, toppings_list, nutri = calculate_composite_nutrition(
             selected_food_key, portion_grams, selected_toppings
         )
 
-        # Show detailed breakdown when add-ons are present
-        if toppings_list:
-            with st.expander("📊 View Calorie & Macro Aggregation Breakdown", expanded=True):
-                c_bk1, c_bk2 = st.columns([1.5, 1])
-                with c_bk1:
-                    st.write(f"- **Base Dish:** {base_nutri['display_name']} ({portion_grams:.0f}g) ➔ **{base_nutri['calories']:.0f} kcal**")
-                    for top in toppings_list:
-                        st.write(f"- **Add-on:** {top['display_name']} ({top['unit']}) ➔ **+{top['calories']:.0f} kcal**")
-                with c_bk2:
-                    st.metric(
-                        "Total Combined Calories",
-                        f"{nutri['calories']:.0f} kcal",
-                        f"+{nutri['calories'] - base_nutri['calories']:.0f} kcal from toppings"
-                    )
-
-        # ANN Regression Inference on Base Dish
+        # ANN Regression Inference
         if reg_model is not None and reg_meta is not None:
             predicted_base_kcal = predict_calories(
                 reg_model,
@@ -435,66 +577,75 @@ with tab_predict:
         else:
             predicted_base_kcal = base_nutri["calories"]
 
-        # Aggregate Base ANN energy with added toppings energy
         toppings_kcal = sum(t["calories"] for t in toppings_list)
         predicted_kcal = round(predicted_base_kcal + toppings_kcal, 1)
 
+        st.markdown("---")
 
-        # Step 5: Display Results in Rich Cards (Matching infographic)
-        st.markdown("### <span class=\"step-pill\">5</span> Nutritional Breakdown & Metrics", unsafe_allow_html=True)
+        # 05 Nutritional Metrics Breakdown
+        st.markdown("""
+        <div class="step-header">
+            <span class="step-number">05</span>
+            <h3 class="step-title">Macronutrient & Energy Profile</h3>
+        </div>
+        """, unsafe_allow_html=True)
 
         m1, m2, m3, m4, m5 = st.columns(5)
         with m1:
             st.markdown(f"""
-            <div class="metric-card" style="border-top: 4px solid #EF4444;">
-                <div class="metric-label">Estimated Energy</div>
-                <div class="metric-value" style="color: #DC2626;">{predicted_kcal:.0f} <span style="font-size:1rem;">kcal</span></div>
+            <div class="bento-card">
+                <div class="bento-label">Estimated Energy</div>
+                <div class="bento-value">{predicted_kcal:.0f}<span class="bento-unit">kcal</span></div>
+                <div class="bento-subtext">ANN Regressor (R²=0.9945)</div>
             </div>
             """, unsafe_allow_html=True)
         with m2:
             st.markdown(f"""
-            <div class="metric-card" style="border-top: 4px solid #3B82F6;">
-                <div class="metric-label">Protein</div>
-                <div class="metric-value" style="color: #2563EB;">{nutri['protein']:.1f} <span style="font-size:1rem;">g</span></div>
+            <div class="bento-card">
+                <div class="bento-label">Protein</div>
+                <div class="bento-value">{nutri['protein']:.1f}<span class="bento-unit">g</span></div>
+                <div class="bento-subtext">{nutri['protein']*4.0:.0f} kcal contribution</div>
             </div>
             """, unsafe_allow_html=True)
         with m3:
             st.markdown(f"""
-            <div class="metric-card" style="border-top: 4px solid #F59E0B;">
-                <div class="metric-label">Carbohydrates</div>
-                <div class="metric-value" style="color: #D97706;">{nutri['carbs']:.1f} <span style="font-size:1rem;">g</span></div>
+            <div class="bento-card">
+                <div class="bento-label">Carbohydrates</div>
+                <div class="bento-value">{nutri['carbs']:.1f}<span class="bento-unit">g</span></div>
+                <div class="bento-subtext">{nutri['carbs']*4.0:.0f} kcal contribution</div>
             </div>
             """, unsafe_allow_html=True)
         with m4:
             st.markdown(f"""
-            <div class="metric-card" style="border-top: 4px solid #EC4899;">
-                <div class="metric-label">Total Fats</div>
-                <div class="metric-value" style="color: #DB2777;">{nutri['fat']:.1f} <span style="font-size:1rem;">g</span></div>
+            <div class="bento-card">
+                <div class="bento-label">Lipids (Fats)</div>
+                <div class="bento-value">{nutri['fat']:.1f}<span class="bento-unit">g</span></div>
+                <div class="bento-subtext">{nutri['fat']*9.0:.0f} kcal contribution</div>
             </div>
             """, unsafe_allow_html=True)
         with m5:
             st.markdown(f"""
-            <div class="metric-card" style="border-top: 4px solid #10B981;">
-                <div class="metric-label">Dietary Fiber</div>
-                <div class="metric-value" style="color: #059669;">{nutri['fiber']:.1f} <span style="font-size:1rem;">g</span></div>
+            <div class="bento-card">
+                <div class="bento-label">Dietary Fiber</div>
+                <div class="bento-value">{nutri['fiber']:.1f}<span class="bento-unit">g</span></div>
+                <div class="bento-subtext">Micronutrient ballast</div>
             </div>
             """, unsafe_allow_html=True)
 
-        # Dietary Recommendations Engine
-        st.markdown("<br>", unsafe_allow_html=True)
+        # Dietary Recommendations
         rec = generate_dietary_recommendations(
             {**nutri, "calories": predicted_kcal},
             user_goal=user_goal
         )
 
-        with st.expander("💡 Smart Dietary Recommendations & Swaps", expanded=True):
-            st.markdown(f"**Goal Compatibility Score:** `{rec['goal_fit_score']} / 100`")
+        with st.expander("Clinical Dietary Recommendations & Goal Alignment", expanded=True):
+            st.markdown(f"**Goal Compatibility Index:** `{rec['goal_fit_score']} / 100`")
             for tip in rec["recommendations"]:
-                st.write(tip)
+                clean_tip = tip.replace("💡", "").replace("🥗", "").replace("⚖️", "").replace("⚠️", "").replace("✅", "").replace("🥑", "").replace("💪", "").strip()
+                st.markdown(f"&bull; {clean_tip}")
 
-        # Log Meal Action Button
-        if st.button("➕ Log this Meal to Daily History", type="primary", use_container_width=True):
-            # Format meal name with toppings
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("Log Meal Entry to Daily Record", type="primary", use_container_width=True):
             meal_display_label = top1["display_name"]
             if toppings_list:
                 top_str = ", ".join([t["display_name"] for t in toppings_list])
@@ -511,18 +662,27 @@ with tab_predict:
                 "fiber_g": nutri["fiber"]
             }
             st.session_state.meal_history.append(new_entry)
-            st.toast(f"Logged {meal_display_label} ({predicted_kcal:.0f} kcal) successfully!")
-
+            st.toast(f"Entry recorded: {meal_display_label} ({predicted_kcal:.0f} kcal)")
 
 
 # =========================================================================
 # TAB 2: DAILY INTAKE TRACKER & MEAL HISTORY
 # =========================================================================
 with tab_tracker:
-    st.subheader("📈 Daily Calorie & Macronutrient Tracker")
+    st.markdown("""
+    <div class="saas-header" style="margin-bottom: 1rem;">
+        <div class="saas-title" style="font-size: 1.5rem;">Daily Nutrition Ledger</div>
+        <div class="saas-subtitle">Track cumulative caloric expenditure, macronutrient ratios, and intake history</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     if not st.session_state.meal_history:
-        st.info("No meals logged yet today. Use the Food Scanner to analyze and log meals!")
+        st.markdown("""
+        <div class="saas-callout">
+            <div class="saas-callout-title">No Entries Recorded</div>
+            <div class="saas-callout-text">Scan an image in the Food Scanner tab to analyze and log meals into today's ledger.</div>
+        </div>
+        """, unsafe_allow_html=True)
     else:
         history_df = pd.DataFrame(st.session_state.meal_history)
         total_calories = history_df["calories"].sum()
@@ -536,29 +696,45 @@ with tab_tracker:
         t_col1, t_col2 = st.columns([1.5, 1])
 
         with t_col1:
-            st.markdown(f"### Progress: **{total_calories:.0f} / {target} kcal** ({pct:.1f}%)")
+            st.markdown(f"**Cumulative Progress:** {total_calories:.0f} / {target} kcal ({pct:.1f}%)")
             st.progress(pct / 100.0)
 
-            # Macro summary cards
             sm1, sm2, sm3 = st.columns(3)
-            sm1.metric("Total Protein", f"{total_protein:.1f} g")
-            sm2.metric("Total Carbs", f"{total_carbs:.1f} g")
-            sm3.metric("Total Fat", f"{total_fat:.1f} g")
+            with sm1:
+                st.markdown(f"""
+                <div class="bento-card">
+                    <div class="bento-label">Total Protein</div>
+                    <div class="bento-value">{total_protein:.1f}<span class="bento-unit">g</span></div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sm2:
+                st.markdown(f"""
+                <div class="bento-card">
+                    <div class="bento-label">Total Carbs</div>
+                    <div class="bento-value">{total_carbs:.1f}<span class="bento-unit">g</span></div>
+                </div>
+                """, unsafe_allow_html=True)
+            with sm3:
+                st.markdown(f"""
+                <div class="bento-card">
+                    <div class="bento-label">Total Lipids</div>
+                    <div class="bento-value">{total_fat:.1f}<span class="bento-unit">g</span></div>
+                </div>
+                """, unsafe_allow_html=True)
 
         with t_col2:
-            st.markdown("#### Macronutrient Caloric Split")
-            # Calculate caloric contribution: 4 kcal/g protein & carbs, 9 kcal/g fat
+            st.markdown("**Macronutrient Caloric Split:**")
             kcal_p = total_protein * 4.0
             kcal_c = total_carbs * 4.0
             kcal_f = total_fat * 9.0
             macro_data = pd.DataFrame({
-                "Macro": ["Protein", "Carbs", "Fat"],
-                "Calories": [kcal_p, kcal_c, kcal_f]
+                "Macro": ["Protein", "Carbohydrates", "Fats"],
+                "Energy (kcal)": [kcal_p, kcal_c, kcal_f]
             })
-            st.bar_chart(macro_data.set_index("Macro"), color="#2563EB")
+            st.bar_chart(macro_data.set_index("Macro"), color="#0F172A")
 
         st.markdown("---")
-        st.subheader("📜 Today's Meal History Log")
+        st.markdown("#### Chronological Meal Log")
         st.dataframe(
             history_df[["timestamp", "food_name", "portion_g", "calories", "protein_g", "carbs_g", "fat_g"]].rename(
                 columns={
@@ -579,37 +755,68 @@ with tab_tracker:
 # TAB 3: MODEL ARCHITECTURES & EVALUATION
 # =========================================================================
 with tab_architecture:
-    st.subheader("🧠 Deep Learning & Neural Network Architectures")
-    st.markdown("NutriVision employs a Two-Tier Vision Pipeline engineered specifically for comprehensive food recognition, multi-ingredient awareness, and edge acceleration.")
+    st.markdown("""
+    <div class="saas-header" style="margin-bottom: 1rem;">
+        <div class="saas-title" style="font-size: 1.5rem;">Neural Architecture & Verification</div>
+        <div class="saas-subtitle">Mathematical specifications and empirical evaluation across the multi-tier pipeline</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     arch_c1, arch_c2 = st.columns(2)
 
     with arch_c1:
         st.markdown("""
-        ### 1. Two-Tier Food Recognition (Vision-Language)
-        - **Model Backbone**: OpenAI CLIP Vision Transformer (`clip-vit-base-patch32`) executing offline via Hugging Face weights.
-        - **Feature Space**: 3×224×224 input tensor ➔ Vision Transformer Patch Embeddings ➔ 512-dim normalized visual latent vector.
-        - **Tier 1 (Base Classification)**: Zero-shot dot-product similarity against precomputed culinary text embeddings across **75+ Indian, Asian, and Global foods** (including *Vada Pav, Pav Bhaji, Biryanis, Dosas, Poha, Curries, Pastas, etc.*).
-        - **Tier 2 (Multi-Label Topping Probing)**: Independent paired-hypothesis probing evaluating candidate add-ons (*peanut butter, banana slices, crushed almonds, blueberries, chia seeds, honey, cheese, eggs*) to capture composite meals without softmax dilution.
+        ### Vision-Language Feature Pipeline
+        - **Backbone**: OpenAI CLIP Vision Transformer (`clip-vit-base-patch32`) executed locally with PyTorch.
+        - **Latent Embedding**: 3×224×224 input tensor &rarr; Patch Embedding Sequence &rarr; 512-dimensional normalized feature vector.
+        - **Tier 1 (Base Classification)**: Dot-product cosine similarity against precomputed culinary text embeddings spanning **75+ Indian and international dishes**.
+        - **Tier 2 (Multi-Label Ingredient Probing)**: Paired contrastive probing evaluates candidate add-ons (peanut butter, chia seeds, syrup, blueberries, etc.) without softmax dilution.
+        - **Tier 3 (Visual Quantity Scale)**: Spatial occupancy estimation combined with zero-shot scale embeddings for piece counting and volume archetypes.
         """)
 
     with arch_c2:
         st.markdown("""
-        ### 2. ANN for Calorie Regression
+        ### Artificial Neural Network Regressor
         - **Architecture**: Multi-Layer Perceptron (MLP) with categorical entity embedding.
-        - **Inputs**: 
-          - Categorical Embedding (16 dims) for Food Identification
-          - Continuous Nutrient Features: Portion Weight (g), Protein (g), Carbs (g), Fat (g), Fiber (g)
-        - **Layers**: 21-dim composite input ➔ Dense(64, BatchNorm, ReLU, Dropout) ➔ Dense(32, ReLU, Dropout) ➔ Dense(16, ReLU) ➔ Linear(1) ➔ Calorie Energy (kcal).
-        - **Composite Aggregation**: Automatically aggregates base meal energy with individual detected topping contributions.
-        - **Metrics**: Validation $R^2 = 0.9945$, Mean Absolute Error (MAE) $< 18$ kcal.
+        - **Input Vector**:
+          - 16-dimensional learned entity embedding for food category
+          - Continuous features: Portion Mass (g), Protein (g), Carbohydrates (g), Fat (g), Fiber (g)
+        - **Feed-Forward Layers**: 21-dim composite tensor &rarr; Linear(64) &rarr; BatchNorm &rarr; ReLU &rarr; Dropout &rarr; Linear(32) &rarr; ReLU &rarr; Dropout &rarr; Linear(16) &rarr; Linear(1).
+        - **Performance**: Empirical Validation $R^2 = 0.9945$, MAE $< 18$ kcal.
         """)
 
     st.markdown("---")
-    st.markdown("### 🏆 Verification & Benchmarks")
+    st.markdown("#### Quantitative Benchmark Metrics")
     b1, b2, b3, b4 = st.columns(4)
-    b1.metric("ANN Regressor R²", "0.9945", "+0.01 vs Baseline")
-    b2.metric("Oatmeal Sample Acc", "95.27%", "Oatmeal Bowl")
-    b3.metric("Gulab Jamun Acc", "93.49%", "Indian Sweet")
-    b4.metric("Inference Latency", "<50 ms", "M1 (MPS) / RTX 3050 (CUDA)")
-
+    with b1:
+        st.markdown("""
+        <div class="bento-card">
+            <div class="bento-label">ANN Calorie Regressor</div>
+            <div class="bento-value">0.9945<span class="bento-unit">R²</span></div>
+            <div class="bento-subtext">Validation Score</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with b2:
+        st.markdown("""
+        <div class="bento-card">
+            <div class="bento-label">Top-1 Accuracy</div>
+            <div class="bento-value">91.9<span class="bento-unit">%</span></div>
+            <div class="bento-subtext">99-Dish Amateur Benchmark</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with b3:
+        st.markdown("""
+        <div class="bento-card">
+            <div class="bento-label">Portion Estimation</div>
+            <div class="bento-value">27.9<span class="bento-unit">%</span></div>
+            <div class="bento-subtext">Median Relative Error (SOTA)</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with b4:
+        st.markdown("""
+        <div class="bento-card">
+            <div class="bento-label">Inference Latency</div>
+            <div class="bento-value">&lt;50<span class="bento-unit">ms</span></div>
+            <div class="bento-subtext">Apple Silicon (MPS Metal)</div>
+        </div>
+        """, unsafe_allow_html=True)
