@@ -89,10 +89,21 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
-from utils.nutrition_db import (
-    FOOD_DATABASE, FOOD_CLASSES, TOPPINGS_DATABASE,
-    get_nutrition_for_portion, calculate_composite_nutrition
-)
+try:
+    from utils.nutrition_db import (
+        FOOD_DATABASE, FOOD_CLASSES, TOPPINGS_DATABASE,
+        get_nutrition_for_portion, calculate_composite_nutrition,
+        get_serving_archetype
+    )
+except ImportError:
+    import importlib
+    import utils.nutrition_db
+    importlib.reload(utils.nutrition_db)
+    from utils.nutrition_db import (
+        FOOD_DATABASE, FOOD_CLASSES, TOPPINGS_DATABASE,
+        get_nutrition_for_portion, calculate_composite_nutrition,
+        get_serving_archetype
+    )
 from utils.preprocessing import preprocess_food_image
 from utils.recommendations import generate_dietary_recommendations
 from models.ann_regressor import load_calorie_regressor, predict_calories, get_optimal_device
@@ -183,6 +194,9 @@ def load_nutrivision_models():
     return clf_model, reg_model, reg_meta
 
 clf_model, reg_model, reg_meta = load_nutrivision_models()
+if clf_model is not None and not hasattr(clf_model, "quantity_text_embeds"):
+    st.cache_resource.clear()
+    clf_model, reg_model, reg_meta = load_nutrivision_models()
 
 
 
@@ -260,9 +274,9 @@ with tab_predict:
         st.markdown("---")
 
         # Step 3: CNN Food Classification & Multi-Label Topping Detection
-        st.markdown("### <span class=\"step-pill\">3</span> Two-Tier Food & Topping Recognition", unsafe_allow_html=True)
+        st.markdown("### <span class=\"step-pill\">3</span> Three-Tier Vision Pipeline (Dish, Toppings & Quantity)", unsafe_allow_html=True)
         
-        top1, top_k, _, detected_toppings = classify_food_image(clf_model, uploaded_image, top_k=4, device=device)
+        top1, top_k, _, detected_toppings, quantity_info = classify_food_image(clf_model, uploaded_image, top_k=4, device=device)
 
         col_pred_main, col_pred_topk = st.columns([1.5, 1])
 
@@ -272,9 +286,18 @@ with tab_predict:
             st.progress(float(top1['confidence']) / 100.0, text=f"Classification Confidence: {top1['confidence']}%")
 
         with col_pred_topk:
-            st.markdown("**Top Alternative Candidates:**")
-            for c in top_k[1:]:
-                st.write(f"- **{c['display_name']}** ({c['confidence']}%)")
+            st.markdown("**Switch Dish Selection (Top Candidates):**")
+            candidate_keys = [c["food_key"] for c in top_k]
+            selected_food_key = st.selectbox(
+                "Active Dish Selection:",
+                options=candidate_keys,
+                index=0,
+                format_func=lambda k: f"{FOOD_DATABASE[k]['display_name']} ({next(c['confidence'] for c in top_k if c['food_key'] == k):.1f}%)"
+            )
+            # If user switched candidate dish, re-evaluate quantity for that specific dish
+            if selected_food_key != top1["food_key"]:
+                if hasattr(clf_model, "estimate_quantity"):
+                    quantity_info = clf_model.estimate_quantity(uploaded_image, selected_food_key)
 
         # --- Tier 2: Detected Ingredients & Toppings ---
         st.markdown("<br>", unsafe_allow_html=True)
@@ -303,33 +326,77 @@ with tab_predict:
         st.markdown("---")
 
         # Step 4: Portion Adjustment & ANN Calorie Estimation
-        st.markdown("### <span class=\"step-pill\">4</span> Calorie & Macronutrient Estimation (ANN Regressor)", unsafe_allow_html=True)
+        st.markdown("### <span class=\"step-pill\">4</span> Visual Quantity & Calorie Estimation (ANN Regressor)", unsafe_allow_html=True)
 
-        selected_food_key = top1["food_key"]
-        default_portion = FOOD_DATABASE.get(selected_food_key, {}).get("default_portion_g", 250)
+        # Track session state to auto-initialize portion from AI detection
+        current_dish_tracker = f"{selected_food_key}_{quantity_info.get('estimated_grams', 250)}"
+        if st.session_state.get("last_auto_food") != current_dish_tracker:
+            st.session_state.custom_portion = float(quantity_info.get("estimated_grams", 250.0))
+            st.session_state.last_auto_food = current_dish_tracker
 
-        st.markdown("**Base Portion Size Adjustment:**")
-        p_col1, p_col2, p_col3, p_col4 = st.columns([1, 1, 1, 2])
-        with p_col1:
-            if st.button("Small (150g)", use_container_width=True):
-                st.session_state.custom_portion = 150.0
-        with p_col2:
-            if st.button("Medium (300g)", use_container_width=True):
-                st.session_state.custom_portion = 300.0
-        with p_col3:
-            if st.button("Large (500g)", use_container_width=True):
-                st.session_state.custom_portion = 500.0
+        # --- Tier 3: Visual Quantity & Serving Size Card ---
+        st.markdown("#### 📏 AI Visual Quantity & Portion Scale Detector")
 
-        if "custom_portion" not in st.session_state:
-            st.session_state.custom_portion = float(default_portion)
+        arch = get_serving_archetype(selected_food_key)
+        stype = arch.get("serving_type", "continuous")
+        unit_w = arch.get("unit_weight_g", 100.0)
+        def_portion = arch.get("default_portion_g", 250.0)
 
-        with p_col4:
+        fallback_label = f"{'1 Piece' if stype == 'discrete' else 'Regular Serving'} (~{def_portion:.0f}g)"
+        q_serving_label = quantity_info.get("serving_label", fallback_label) if isinstance(quantity_info, dict) else fallback_label
+        q_description = quantity_info.get("description", f"Standard portion baseline of {def_portion:.0f}g applied.") if isinstance(quantity_info, dict) else f"Standard portion baseline of {def_portion:.0f}g applied."
+        q_confidence = quantity_info.get("confidence", 75.0) if isinstance(quantity_info, dict) else 75.0
+        q_occupancy = quantity_info.get("occupancy_pct", 50.0) if isinstance(quantity_info, dict) else 50.0
+
+        q_box1, q_box2 = st.columns([2, 1])
+        with q_box1:
+            st.success(f"**AI Detected Serving:** {q_serving_label}")
+            st.caption(f"💡 *{q_description}*")
+        with q_box2:
+            st.metric(
+                "Quantity Confidence",
+                f"{q_confidence}%",
+                f"{q_occupancy}% plate coverage"
+            )
+
+        st.markdown("**Portion Adjustment (AI Initialized):**")
+        p_col1, p_col2, p_col3, p_col4, p_col5 = st.columns([1, 1, 1, 1, 2])
+        if stype == "discrete":
+            uname = arch["unit_name"].title()
+            with p_col1:
+                if st.button(f"1 {uname} ({unit_w:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(unit_w)
+            with p_col2:
+                if st.button(f"2 {uname}s ({unit_w*2:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(unit_w * 2)
+            with p_col3:
+                if st.button(f"3-4 {uname}s ({unit_w*3.5:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(unit_w * 3.5)
+            with p_col4:
+                if st.button(f"5+ {uname}s ({unit_w*5:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(unit_w * 5)
+        else:
+            with p_col1:
+                if st.button(f"Snack ({def_portion*0.65:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(def_portion * 0.65)
+            with p_col2:
+                if st.button(f"Regular ({def_portion:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(def_portion)
+            with p_col3:
+                if st.button(f"Generous ({def_portion*1.4:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(def_portion * 1.4)
+            with p_col4:
+                if st.button(f"Sharing ({def_portion*1.85:.0f}g)", use_container_width=True):
+                    st.session_state.custom_portion = float(def_portion * 1.85)
+
+        with p_col5:
             portion_grams = st.slider(
                 "Base Dish Weight (grams):",
-                min_value=50.0,
-                max_value=800.0,
+                min_value=30.0,
+                max_value=900.0,
                 value=float(st.session_state.custom_portion),
-                step=10.0
+                step=5.0,
+                help="Automatically initialized by AI Visual Quantity Detector; drag to fine-tune."
             )
 
         # Compute combined nutrition (Base meal + Selected toppings)

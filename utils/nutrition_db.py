@@ -917,6 +917,77 @@ def calculate_composite_nutrition(food_key: str, portion_grams: float, selected_
     return base, toppings_list, total_nutri
 
 
+# ==============================================================================
+# Serving Archetypes: Discrete (Countable Units) vs Continuous (Volume/Mass)
+# ==============================================================================
+SERVING_ARCHETYPES = {
+    # Indian Snacks & Street Foods
+    "vada_pav": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 150.0, "default_count": 1},
+    "samosa": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 85.0, "default_count": 2},
+    "pani_puri": {"serving_type": "discrete", "unit_name": "puri", "unit_weight_g": 25.0, "default_count": 6},
+    "idli": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 45.0, "default_count": 3},
+    "medu_vada": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 60.0, "default_count": 2},
+    "aloo_paratha": {"serving_type": "discrete", "unit_name": "paratha", "unit_weight_g": 140.0, "default_count": 1},
+    "paneer_paratha": {"serving_type": "discrete", "unit_name": "paratha", "unit_weight_g": 150.0, "default_count": 1},
+    "poori_bhaji": {"serving_type": "discrete", "unit_name": "poori", "unit_weight_g": 50.0, "default_count": 3},
+    "dhokla": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 40.0, "default_count": 4},
+    "roti_naan": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 60.0, "default_count": 2},
+    "gulab_jamun": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 50.0, "default_count": 2},
+    "rasgulla": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 45.0, "default_count": 2},
+    "jalebi": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 30.0, "default_count": 3},
+    "plain_dosa": {"serving_type": "discrete", "unit_name": "dosa", "unit_weight_g": 130.0, "default_count": 1},
+    "masala_dosa": {"serving_type": "discrete", "unit_name": "dosa", "unit_weight_g": 180.0, "default_count": 1},
+    "uttapam": {"serving_type": "discrete", "unit_name": "pancake", "unit_weight_g": 150.0, "default_count": 1},
+    "chicken_tikka": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 40.0, "default_count": 5},
+
+    # Asian Specialties
+    "momos": {"serving_type": "discrete", "unit_name": "dumpling", "unit_weight_g": 30.0, "default_count": 6},
+    "dim_sum": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 30.0, "default_count": 4},
+    "sushi": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 35.0, "default_count": 6},
+    "spring_rolls": {"serving_type": "discrete", "unit_name": "roll", "unit_weight_g": 50.0, "default_count": 3},
+
+    # Western & Breakfast
+    "boiled_eggs": {"serving_type": "discrete", "unit_name": "egg", "unit_weight_g": 50.0, "default_count": 2},
+    "scrambled_eggs": {"serving_type": "discrete", "unit_name": "egg", "unit_weight_g": 50.0, "default_count": 2},
+    "pancakes": {"serving_type": "discrete", "unit_name": "pancake", "unit_weight_g": 80.0, "default_count": 2},
+    "waffles": {"serving_type": "discrete", "unit_name": "waffle", "unit_weight_g": 90.0, "default_count": 2},
+    "croissant": {"serving_type": "discrete", "unit_name": "croissant", "unit_weight_g": 70.0, "default_count": 1},
+    "burger": {"serving_type": "discrete", "unit_name": "burger", "unit_weight_g": 220.0, "default_count": 1},
+    "hot_dog": {"serving_type": "discrete", "unit_name": "hot dog", "unit_weight_g": 140.0, "default_count": 1},
+    "sandwich": {"serving_type": "discrete", "unit_name": "sandwich", "unit_weight_g": 180.0, "default_count": 1},
+    "tacos": {"serving_type": "discrete", "unit_name": "taco", "unit_weight_g": 110.0, "default_count": 2},
+    "fried_chicken": {"serving_type": "discrete", "unit_name": "piece", "unit_weight_g": 90.0, "default_count": 2},
+    "avocado_toast": {"serving_type": "discrete", "unit_name": "slice", "unit_weight_g": 130.0, "default_count": 1},
+    "pizza": {"serving_type": "discrete", "unit_name": "slice", "unit_weight_g": 125.0, "default_count": 2},
+    "steak": {"serving_type": "discrete", "unit_name": "fillet", "unit_weight_g": 220.0, "default_count": 1},
+    "grilled_salmon": {"serving_type": "discrete", "unit_name": "fillet", "unit_weight_g": 200.0, "default_count": 1},
+    "grilled_chicken": {"serving_type": "discrete", "unit_name": "breast", "unit_weight_g": 200.0, "default_count": 1},
+    "chocolate_cake": {"serving_type": "discrete", "unit_name": "slice", "unit_weight_g": 110.0, "default_count": 1},
+}
+
+
+def get_serving_archetype(food_key: str) -> dict:
+    """
+    Returns the serving archetype (discrete pieces vs continuous mass)
+    along with reference unit weights and standard units.
+    """
+    food = FOOD_DATABASE.get(food_key, {})
+    def_portion = float(food.get("default_portion_g", 250.0))
+
+    if food_key in SERVING_ARCHETYPES:
+        arch = SERVING_ARCHETYPES[food_key].copy()
+        arch["default_portion_g"] = def_portion
+        return arch
+
+    # Continuous foods (Curries, Biryanis, Porridge, Pasta, Salads, etc.)
+    return {
+        "serving_type": "continuous",
+        "unit_name": "serving",
+        "unit_weight_g": def_portion,
+        "default_count": 1,
+        "default_portion_g": def_portion
+    }
+
 
 def generate_ann_training_dataset(num_samples: int = 5000, random_seed: int = 42):
     """

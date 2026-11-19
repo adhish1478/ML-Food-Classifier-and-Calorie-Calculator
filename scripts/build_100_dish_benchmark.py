@@ -219,6 +219,7 @@ def run_benchmark():
     top3_correct = 0
     total_items = 0
     total_abs_calorie_error = 0.0
+    total_abs_portion_error = 0.0
     total_topping_tp = 0
     total_topping_fp = 0
     total_topping_fn = 0
@@ -237,8 +238,8 @@ def run_benchmark():
         total_items += 1
         img = Image.open(fpath)
 
-        # Run Tier-1 & Tier-2 Classification
-        top1, top_k, prep, detected_toppings = classify_food_image(clf_model, img, top_k=3)
+        # Run Tier-1, Tier-2 & Tier-3 Vision Pipeline
+        top1, top_k, prep, detected_toppings, quantity_info = classify_food_image(clf_model, img, top_k=3)
         detected_top_keys = [t["topping_key"] for t in detected_toppings]
         detected_top_names = [t["display_name"] for t in detected_toppings]
 
@@ -264,8 +265,12 @@ def run_benchmark():
         total_topping_fp += fp
         total_topping_fn += fn
 
-        # Run Calorie Estimation
+        # Run Calorie Estimation using AI detected portion
         portion = float(item["portion"])
+        pred_portion = float(quantity_info.get("estimated_grams", portion))
+        portion_error = abs(pred_portion - portion)
+        total_abs_portion_error += portion_error
+
         base_nutri, toppings_list, total_nutri = calculate_composite_nutrition(top1["food_key"], portion, detected_top_keys)
         base_kcal = predict_calories(
             reg_model, reg_meta, top1["food_key"], portion,
@@ -285,6 +290,9 @@ def run_benchmark():
             "ground_truth_key": gt_key,
             "ground_truth_toppings": [TOPPINGS_DATABASE[k]["display_name"] for k in item.get("toppings", []) if k in TOPPINGS_DATABASE],
             "ground_truth_portion_g": item["portion"],
+            "predicted_portion_g": pred_portion,
+            "portion_error_g": round(portion_error, 1),
+            "detected_serving": quantity_info.get("serving_label", ""),
             "ground_truth_calories": gt_cal,
             "ground_truth_protein_g": item["p"],
             "ground_truth_carbs_g": item["c"],
@@ -315,6 +323,10 @@ def run_benchmark():
             "Top-1 Confidence (%)": top1["confidence"],
             "Top-1 Match": "YES" if is_top1 else "NO",
             "Top-3 Match": "YES" if is_top3 else "NO",
+            "GT Portion (g)": item["portion"],
+            "Pred Portion (g)": pred_portion,
+            "Detected Serving": quantity_info.get("serving_label", ""),
+            "Portion Error (g)": round(portion_error, 1),
             "GT Toppings": "; ".join(res_record["ground_truth_toppings"]),
             "Detected Toppings": "; ".join(detected_top_names),
             "GT Calories (kcal)": gt_cal,
@@ -344,6 +356,7 @@ def run_benchmark():
     top1_acc = (top1_correct / total_items) * 100.0 if total_items else 0
     top3_acc = (top3_correct / total_items) * 100.0 if total_items else 0
     mae_kcal = (total_abs_calorie_error / total_items) if total_items else 0
+    mae_portion_g = (total_abs_portion_error / total_items) if total_items else 0
 
     p_prec = (total_topping_tp / (total_topping_tp + total_topping_fp)) * 100.0 if (total_topping_tp + total_topping_fp) else 0
     p_rec = (total_topping_tp / (total_topping_tp + total_topping_fn)) * 100.0 if (total_topping_tp + total_topping_fn) else 0
@@ -358,6 +371,7 @@ def run_benchmark():
     print(f"Multi-Label Topping Precision:          {p_prec:.2f}%")
     print(f"Multi-Label Topping Recall:             {p_rec:.2f}%")
     print(f"Multi-Label Topping F1-Score:           {p_f1:.2f}%")
+    print(f"Visual Portion Estimation MAE:          {mae_portion_g:.1f} g")
     print(f"Calorie Regression Mean Absolute Error:  {mae_kcal:.2f} kcal")
     print("=" * 70)
     print(f"Saved Complete Benchmark CSV  -> {results_csv}")
