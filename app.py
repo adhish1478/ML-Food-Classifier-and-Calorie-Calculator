@@ -165,9 +165,9 @@ tab_predict, tab_tracker, tab_architecture = st.tabs([
     "🧠 Model Architectures & Evaluation"
 ])
 
-# Lazy load models with Streamlit cache
-@st.cache_resource(show_spinner=False)
-def get_cached_models():
+# Load models with Streamlit cache
+@st.cache_resource(show_spinner="Loading AI Models...")
+def load_nutrivision_models():
     regressor_path = os.path.join(BASE_DIR, "models", "calorie_regressor.pt")
     reg_model, reg_meta = None, None
     if os.path.exists(regressor_path):
@@ -176,11 +176,11 @@ def get_cached_models():
         except Exception as e:
             st.warning(f"Note on regressor: {e}")
 
-    classifier_path = os.path.join(BASE_DIR, "models", "food_classifier.pt")
-    clf_model = load_food_classifier(classifier_path, device=device)
+    clf_model = load_food_classifier(device=device)
     return clf_model, reg_model, reg_meta
 
-clf_model, reg_model, reg_meta = get_cached_models()
+clf_model, reg_model, reg_meta = load_nutrivision_models()
+
 
 
 # =========================================================================
@@ -245,13 +245,14 @@ with tab_predict:
 
         c1, c2, c3, c4 = st.columns(4)
         with c1:
-            st.image(prep_data["original_image"], caption="1. Original Capture", use_container_width=True)
+            st.image(prep_data["original_image"], caption="1. Original Capture")
         with c2:
-            st.image(prep_data["cropped_image"], caption="2. Resize & Crop (224×224)", use_container_width=True)
+            st.image(prep_data["cropped_image"], caption="2. Resize & Crop (224×224)")
         with c3:
-            st.image(prep_data["gray_image"], caption="3. Grayscale (Denoise)", use_container_width=True)
+            st.image(prep_data["gray_image"], caption="3. Grayscale (Denoise)")
         with c4:
-            st.image(prep_data["normalized_image"], caption="4. Normalized Feature Map", use_container_width=True)
+            st.image(prep_data["normalized_image"], caption="4. Normalized Feature Map")
+
 
         st.markdown("---")
 

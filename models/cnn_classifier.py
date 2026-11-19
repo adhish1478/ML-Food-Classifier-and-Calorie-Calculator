@@ -80,10 +80,17 @@ class FoodClassifier:
         self.model_id = model_id
 
         from transformers import CLIPProcessor, CLIPModel
-        print(f"[NutriVision] Initializing Pretrained Food Classifier ({model_id}) on {device}...")
-        self.processor = CLIPProcessor.from_pretrained(model_id)
-        self.model = CLIPModel.from_pretrained(model_id).to(device)
+        print(f"[NutriVision] Loading Pretrained Food Classifier ({model_id}) on {device} (100% Offline / Local)...")
+        try:
+            self.processor = CLIPProcessor.from_pretrained(model_id, local_files_only=True)
+            self.model = CLIPModel.from_pretrained(model_id, local_files_only=True).to(device)
+        except Exception:
+            # Fallback if running on a fresh machine where model has not yet been cached
+            self.processor = CLIPProcessor.from_pretrained(model_id)
+            self.model = CLIPModel.from_pretrained(model_id).to(device)
+
         self.model.eval()
+
 
         self.food_keys = FOOD_KEYS
         self.candidate_texts = CANDIDATE_TEXTS
@@ -129,6 +136,9 @@ class FoodClassifier:
         return top1, candidates, prep_data
 
 
+# Backward compatibility alias
+FoodClassifierCNN = FoodClassifier
+
 def load_food_classifier(model_path: str = None, device: torch.device = None) -> FoodClassifier:
     """
     Factory function to load the NutriVision food classifier.
@@ -137,12 +147,19 @@ def load_food_classifier(model_path: str = None, device: torch.device = None) ->
 
 
 def classify_food_image(
-    model: FoodClassifier,
+    model: Any,
     image: Image.Image,
     top_k: int = 3,
     device: torch.device = None
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]], Dict[str, Any]]:
     """
     Convenience wrapper function matching the app interface.
+    Gracefully handles old cached models or newly initialized models.
     """
-    return model.predict(image, top_k=top_k)
+    if hasattr(model, "predict"):
+        return model.predict(image, top_k=top_k)
+    
+    # If a stale cached object was passed from a running Streamlit session
+    fresh_model = FoodClassifier(device=device)
+    return fresh_model.predict(image, top_k=top_k)
+
