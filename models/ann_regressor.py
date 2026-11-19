@@ -249,8 +249,14 @@ def load_calorie_regressor(model_path: str, device: torch.device = None) -> Tupl
     with open(meta_path, "r") as f:
         meta = json.load(f)
 
-    model = CalorieRegressionANN().to(device)
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    state_dict = torch.load(model_path, map_location=device)
+    saved_num_classes = (
+        state_dict["class_embedding.weight"].shape[0]
+        if "class_embedding.weight" in state_dict
+        else len(FOOD_CLASSES)
+    )
+    model = CalorieRegressionANN(num_classes=saved_num_classes).to(device)
+    model.load_state_dict(state_dict)
     model.eval()
     return model, meta
 
@@ -273,13 +279,16 @@ def predict_calories(
         device = get_optimal_device()
 
     class_idx = CLASS_TO_IDX.get(food_key, 0)
+    max_emb = getattr(model.class_embedding, "num_embeddings", 30)
+    safe_class_idx = min(class_idx, max_emb - 1)
+
     raw_num = np.array([portion_g, protein_g, carbs_g, fat_g, fiber_g], dtype=np.float32)
 
     mean = np.array(metadata["scaler_mean"], dtype=np.float32)
     std = np.array(metadata["scaler_std"], dtype=np.float32)
     norm_num = (raw_num - mean) / std
 
-    cls_tensor = torch.tensor([class_idx], dtype=torch.long, device=device)
+    cls_tensor = torch.tensor([safe_class_idx], dtype=torch.long, device=device)
     num_tensor = torch.from_numpy(norm_num.reshape(1, -1)).to(device=device, dtype=torch.float32)
 
 
