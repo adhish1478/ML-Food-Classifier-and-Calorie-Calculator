@@ -5,6 +5,7 @@ transformers>=4.35.0
 
 # Web Application & Visualization
 streamlit>=1.30.0
+streamlit-shadcn-ui>=1.5.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
 
